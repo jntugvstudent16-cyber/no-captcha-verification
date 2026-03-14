@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No-CAPTCHA | Passive Human Verification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .badge {
+            background: #48bb78;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .login-box {
+            background: #f7f7f7;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #667eea;
+        }
+
+        .verification-status {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px dashed #dee2e6;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .status-value {
+            font-weight: bold;
+        }
+
+        .human-score {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f6f9fc 0%, #e9f2f9 100%);
+            border-radius: 15px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+
+        .score-text {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            line-height: 120px;
+            text-align: center;
+        }
+
+        .score-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .login-btn:hover {
+            background: #5a67d8;
+        }
+
+        .login-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: #e8f4fd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .info-title {
+            font-weight: bold;
+            color: #2c5282;
+            margin-bottom: 10px;
+        }
+
+        .info-text {
+            color: #2d3748;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .metric-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .metric-fill {
+            height: 100%;
+            background: #48bb78;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .demo-note {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 No-CAPTCHA</h1>
+        <p class="subtitle">Passive Human Verification System</p>
+        
+        <div class="badge">✨ No CAPTCHA Required • ML-Powered</div>
+        
+        <div class="login-box">
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Enter username" value="demo_user">
+            </div>
+            
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter password" value="password123">
+            </div>
+        </div>
+        
+        <div class="verification-status">
+            <h3 style="color: #856404; margin-bottom: 15px; font-size: 16px;">🔍 Passive Verification in Progress</h3>
+            
+            <div class="status-item">
+                <span class="status-label">🖱️ Mouse Movement</span>
+                <span class="status-value" id="mouseStatus">Analyzing...</span>
+            </div>
+            <div class="metric-bar">
+                <div class="metric-fill" id="mouseBar" style="width: 0%"></div>
+            </div>
+            
+            <div class="status-item">
+                <span class="status-label">⌨️ Typing Pattern</span>
+                <span class="status-value" id="typingStatus">Analyzing...</span>
+            </div>
+            <div class="metric-bar">
+                <div class="metric-fill" id="typingBar" style="width: 0%"></div>
+            </div>
+            
+            <div class="status-item">
+                <span class="status-label">⏱️ Interaction Time</span>
+                <span class="status-value" id="timeStatus">Analyzing...</span>
+            </div>
+            <div class="metric-bar">
+                <div class="metric-fill" id="timeBar" style="width: 0%"></div>
+            </div>
+            
+            <div class="status-item">
+                <span class="status-label">📊 Browser Entropy</span>
+                <span class="status-value" id="browserStatus">Analyzing...</span>
+            </div>
+            <div class="metric-bar">
+                <div class="metric-fill" id="browserBar" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="human-score">
+            <div class="score-circle">
+                <div class="score-text" id="humanScore">0%</div>
+            </div>
+            <div class="score-label">Human Confidence Score</div>
+            <div style="font-size: 12px; color: #666; margin-top: 5px;" id="verdictText">Verifying...</div>
+        </div>
+        
+        <button class="login-btn" id="loginBtn" disabled>⏳ Please wait... Verifying</button>
+        
+        <div class="info-box">
+            <div class="info-title">🎯 How It Works</div>
+            <div class="info-text">
+                <strong>No CAPTCHA needed!</strong> We passively analyze:<br>
+                • Mouse movements (natural vs robotic)<br>
+                • Typing rhythm and speed<br>
+                • Time spent on page<br>
+                • Browser characteristics<br><br>
+                <strong>Current Status:</strong> Move your mouse and type to increase your human score!
+            </div>
+        </div>
+        
+        <div class="demo-note" id="fallbackMessage" style="display: none;">
+            ⚠️ Low confidence detected. Please complete this quick verification:
+            <div style="margin-top: 10px;">
+                <button onclick="simpleCaptcha()" style="padding: 8px 15px; background: #c53030; color: white; border: none; border-radius: 5px;">Click to Verify</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Built for Hack & Forge 2026 | Passive ML Verification
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
